@@ -11,7 +11,7 @@ public class NumbersPicker
         }
 
         var maxF = numberFrequencies.OrderByDescending(frequency => frequency.CurrentNumberFrequency).Take(1).ToList();
-        var combinations = new List<byte[]>();
+        var combinations = new HashSet<byte[]>(new CombinationComparer());
         foreach (var numberFrequency in maxF)
         {
             PickMostFrequentCombinationsInternal([numberFrequency.CurrentNumber], numberFrequency, combinations);
@@ -27,7 +27,7 @@ public class NumbersPicker
         }
     }
 
-    static void PickMostFrequentCombinationsInternal(byte[] numbers, NumberFrequency numberFrequencies, List<byte[]> combinations)
+    static void PickMostFrequentCombinationsInternal(byte[] numbers, NumberFrequency numberFrequencies, ISet<byte[]> combinations)
     {
         if (numbers is { Length: >= 6 })
         {
@@ -44,5 +44,19 @@ public class NumbersPicker
         {
             PickMostFrequentCombinationsInternal([..numbers, numberFrequency.CurrentNumber], numberFrequency, combinations);
         }
+    }
+
+    class CombinationComparer : IEqualityComparer<byte[]>
+    {
+        public bool Equals(byte[]? x, byte[]? y)
+        {
+            if (ReferenceEquals(x, y)) return true;
+            if (x is null && y is not null) return false;
+            if (x is not null && y is null) return false;
+
+            return x.OrderBy(b => b).SequenceEqual(y.OrderBy(b => b));
+        }
+
+        public int GetHashCode(byte[] obj) => obj.OrderBy(x => x).Aggregate(17, (current, b) => current * 31 + b);
     }
 }
