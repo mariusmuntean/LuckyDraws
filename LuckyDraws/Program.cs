@@ -5,5 +5,5 @@ using LuckyDraws.Services;
 var numbersPath = "./Resources/lotto.txt";
 Console.WriteLine($"Reading the winning numbers from {numbersPath}");
 
-var wnr = new WinningNumbersReader();
+var wnr = new TicketReader();
 var allWinningNumbers = await wnr.ReadAllWinningNumbers(numbersPath);

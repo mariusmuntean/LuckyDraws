@@ -4,11 +4,11 @@ using CsvHelper.Configuration;
 
 namespace LuckyDraws.Services;
 
-public class WinningNumbersReader
+public class TicketReader
 {
     private readonly CsvConfiguration _csvConfig;
 
-    public WinningNumbersReader()
+    public TicketReader()
     {
         _csvConfig = new CsvConfiguration(CultureInfo.InvariantCulture)
         {
@@ -16,19 +16,19 @@ public class WinningNumbersReader
         };
     }
 
-    public async Task<List<WinningNumbers>> ReadAllWinningNumbers(string filePath)
+    public async Task<List<Ticket>> ReadAllWinningNumbers(string filePath)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(filePath);
 
         using var sr = new StreamReader(filePath);
         using var csvReader = new CsvReader(sr, _csvConfig);
-        csvReader.Context.RegisterClassMap<WinningNumbersMap>();
+        csvReader.Context.RegisterClassMap<TicketMap>();
 
-        var allWinningNumbers = new List<WinningNumbers>();
+        var allWinningNumbers = new List<Ticket>();
         // Skip header row
         await csvReader.ReadAsync();
         csvReader.ReadHeader();
-        await foreach (var winningNumbers in csvReader.GetRecordsAsync<WinningNumbers>())
+        await foreach (var winningNumbers in csvReader.GetRecordsAsync<Ticket>())
         {
             allWinningNumbers.Add(winningNumbers);
         }
@@ -37,7 +37,7 @@ public class WinningNumbersReader
     }
 }
 
-public class WinningNumbers
+public class Ticket
 {
     public DateOnly Date { get; init; }
     public int[] Numbers { get; init; }
@@ -51,9 +51,9 @@ public class WinningNumbers
     }
 }
 
-internal class WinningNumbersMap : ClassMap<WinningNumbers>
+internal class TicketMap : ClassMap<Ticket>
 {
-    public WinningNumbersMap()
+    public TicketMap()
     {
         Map(numbers => numbers.Date)
             .Convert(args => new DateOnly(Convert.ToInt32(args.Row[2]), Convert.ToInt32(args.Row[1]), Convert.ToInt32(args.Row[0])));
