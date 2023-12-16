@@ -16,8 +16,9 @@ public class TicketReader
         };
     }
 
-    public async Task<List<Ticket>> ReadAllWinningNumbers(string filePath)
+    public async Task<List<Ticket>?> ReadAllWinningNumbers(string filePath)
     {
+        Console.WriteLine($"Reading the winning numbers from {filePath}");
         ArgumentException.ThrowIfNullOrWhiteSpace(filePath);
 
         using var sr = new StreamReader(filePath);
