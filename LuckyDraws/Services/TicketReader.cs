@@ -40,10 +40,10 @@ public class TicketReader
 public class Ticket
 {
     public DateOnly Date { get; init; }
-    public byte[] Numbers { get; init; }
+    public HashSet<byte> Numbers { get; init; }
     public byte SuperNumber { get; init; }
 
-    public void Deconstruct(out DateOnly Date, out byte[] Numbers, out byte SuperNumber)
+    public void Deconstruct(out DateOnly Date, out HashSet<byte> Numbers, out byte SuperNumber)
     {
         Date = this.Date;
         Numbers = this.Numbers;
@@ -59,7 +59,7 @@ internal class TicketMap : ClassMap<Ticket>
             .Convert(args => new DateOnly(Convert.ToInt32(args.Row[2]), Convert.ToInt32(args.Row[1]), Convert.ToInt32(args.Row[0])));
 
         Map(numbers => numbers.Numbers)
-            .Convert(args => new byte[6]
+            .Convert(args => new HashSet<byte>
             {
                 Convert.ToByte(args.Row[3]),
                 Convert.ToByte(args.Row[4]),
