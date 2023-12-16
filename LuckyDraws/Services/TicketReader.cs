@@ -40,10 +40,10 @@ public class TicketReader
 public class Ticket
 {
     public DateOnly Date { get; init; }
-    public int[] Numbers { get; init; }
+    public byte[] Numbers { get; init; }
     public byte SuperNumber { get; init; }
 
-    public void Deconstruct(out DateOnly Date, out int[] Numbers, out byte SuperNumber)
+    public void Deconstruct(out DateOnly Date, out byte[] Numbers, out byte SuperNumber)
     {
         Date = this.Date;
         Numbers = this.Numbers;
@@ -59,14 +59,14 @@ internal class TicketMap : ClassMap<Ticket>
             .Convert(args => new DateOnly(Convert.ToInt32(args.Row[2]), Convert.ToInt32(args.Row[1]), Convert.ToInt32(args.Row[0])));
 
         Map(numbers => numbers.Numbers)
-            .Convert(args => new int[6]
+            .Convert(args => new byte[6]
             {
-                Convert.ToInt32(args.Row[3]),
-                Convert.ToInt32(args.Row[4]),
-                Convert.ToInt32(args.Row[5]),
-                Convert.ToInt32(args.Row[6]),
-                Convert.ToInt32(args.Row[7]),
-                Convert.ToInt32(args.Row[8]),
+                Convert.ToByte(args.Row[3]),
+                Convert.ToByte(args.Row[4]),
+                Convert.ToByte(args.Row[5]),
+                Convert.ToByte(args.Row[6]),
+                Convert.ToByte(args.Row[7]),
+                Convert.ToByte(args.Row[8]),
             });
 
         // There are two 'tabs' between the Zusatzzahl and the Superzahl so we're reading the 12'th column.
