@@ -1,14 +1,17 @@
+using System.Diagnostics;
+
 namespace LuckyDraws.Services;
 
 public class NumbersPicker
 {
-    public void PickMostFrequentCombinations(List<NumberFrequency>? numberFrequencies)
+    public HashSet<byte[]> PickMostFrequentCombinations(List<NumberFrequency>? numberFrequencies)
     {
-        Console.WriteLine("Picking the most frequent number combinations");
         if (numberFrequencies is null || numberFrequencies.Count == 0)
         {
-            return;
+            return new HashSet<byte[]>();
         }
+        Console.WriteLine("Picking the most frequent number combinations");
+        var sw = Stopwatch.StartNew();
 
         var maxF = numberFrequencies.OrderByDescending(frequency => frequency.CurrentNumberFrequency).Take(1).ToList();
         var combinations = new HashSet<byte[]>(new CombinationComparer());
@@ -17,14 +20,8 @@ public class NumbersPicker
             PickMostFrequentCombinationsInternal([numberFrequency.CurrentNumber], numberFrequency, combinations);
         }
 
-        if (combinations.Count != 0)
-        {
-            Console.WriteLine("Combinations");
-            foreach (var combination in combinations)
-            {
-                Console.WriteLine(string.Join(", ", combination));
-            }
-        }
+        Console.WriteLine($"Picked most frequent combinations in {sw.Elapsed.TotalSeconds} seconds");
+        return combinations;
     }
 
     static void PickMostFrequentCombinationsInternal(byte[] numbers, NumberFrequency numberFrequencies, ISet<byte[]> combinations)

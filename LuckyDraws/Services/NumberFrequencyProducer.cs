@@ -1,10 +1,14 @@
+using System.Diagnostics;
+
 namespace LuckyDraws.Services;
 
 public class NumberFrequencyProducer
 {
     public List<NumberFrequency> ProduceFrequencies(List<Ticket>? tickets)
     {
+        ArgumentNullException.ThrowIfNull(tickets);
         Console.WriteLine($"Producing frequencies for all numbers and their ticket neighbors");
+        var sw = Stopwatch.StartNew();
         
         var rawNumberFrequencies = GetRawNumberFrequencies(tickets);
         var numberFrequencies = new List<NumberFrequency>(49);
@@ -20,7 +24,7 @@ public class NumberFrequencyProducer
             });
         }
 
-
+        Console.WriteLine($"Frequencies produced in {sw.Elapsed.TotalSeconds} seconds");
         return numberFrequencies;
     }
 

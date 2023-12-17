@@ -9,4 +9,14 @@ var nfp = new NumberFrequencyProducer();
 var numberFrequencies = nfp.ProduceFrequencies(allTickets);
 
 var np = new NumbersPicker();
-np.PickMostFrequentCombinations(numberFrequencies);
+var combinations = np.PickMostFrequentCombinations(numberFrequencies);
+
+
+if (combinations.Count != 0)
+{
+    Console.WriteLine("Combinations");
+    foreach (var combination in combinations)
+    {
+        Console.WriteLine(string.Join(", ", combination));
+    }
+}

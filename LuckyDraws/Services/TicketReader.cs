@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Globalization;
 using CsvHelper;
 using CsvHelper.Configuration;
@@ -18,8 +19,9 @@ public class TicketReader
 
     public async Task<List<Ticket>?> ReadAllWinningNumbers(string filePath)
     {
-        Console.WriteLine($"Reading the winning numbers from {filePath}");
         ArgumentException.ThrowIfNullOrWhiteSpace(filePath);
+        Console.WriteLine($"Reading the winning numbers from {filePath}");
+        var sw = Stopwatch.StartNew();
 
         using var sr = new StreamReader(filePath);
         using var csvReader = new CsvReader(sr, _csvConfig);
@@ -34,6 +36,7 @@ public class TicketReader
             allWinningNumbers.Add(winningNumbers);
         }
 
+        Console.WriteLine($"Read winning numbers in {sw.Elapsed.TotalSeconds} seconds");
         return allWinningNumbers;
     }
 }
