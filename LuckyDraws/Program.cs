@@ -11,12 +11,17 @@ var numberFrequencies = nfp.ProduceFrequencies(allTickets);
 var np = new NumbersPicker();
 var combinations = np.PickMostFrequentCombinations(numberFrequencies);
 
-var sankeyDiagramRenderer = new SankeyDiagramDotNetCombinationRenderer();
-var sankey = sankeyDiagramRenderer.Render(combinations);
 
-var sankeyFilePath = "sankey.txt";
-await File.WriteAllTextAsync(sankeyFilePath, sankey.ToString());
-Console.WriteLine($"Wrote Sankey data to {sankeyFilePath}");
+var combinationsSortedByTotalFrequencies = combinations.OrderByDescending(combination => combination.CombinationNumbers.Sum(cn => cn.Frequency));
+var sortedCombinationsFilePath = "SortedCombinations.txt";
+using var fs = new FileStream(sortedCombinationsFilePath, FileMode.Create);
+using var sw = new StreamWriter(fs);
+foreach (var c in combinationsSortedByTotalFrequencies)
+{
+    await sw.WriteLineAsync($"Combination: {string.Join(", ", c.CombinationNumbers.Select(cn => $"{cn.Number:00} (f:{cn.Frequency:000})"))}      Total Frequency: {c.CombinationNumbers.Sum(cn => cn.Frequency):000} ");
+}
 
-// var consoleRenderer = new ConsoleCombinationRenderer();
-// consoleRenderer.Render(combinations);
+Console.WriteLine($"Wrote sorted combinations to {sortedCombinationsFilePath}");
+
+var consoleRenderer = new ConsoleCombinationRenderer();
+consoleRenderer.Render(combinationsSortedByTotalFrequencies.Take(10).ToHashSet());

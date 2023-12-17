@@ -5,7 +5,7 @@ namespace LuckyDraws.Services;
 
 public class SankeyDiagramDotNetCombinationRenderer
 {
-    public StringBuilder Render(HashSet<NumbersPicker.Combination> combinations)
+    public StringBuilder GetSankeyData(HashSet<NumbersPicker.Combination> combinations)
     {
         var sw = Stopwatch.StartNew();
 
@@ -39,5 +39,13 @@ public class SankeyDiagramDotNetCombinationRenderer
 
         Console.WriteLine($"Produced Sankey diagram data in {sw.Elapsed.TotalSeconds} seconds");
         return sb;
+    }
+
+    public async Task RenderToFile(HashSet<NumbersPicker.Combination> combinations)
+    {
+        var sankey = GetSankeyData(combinations);
+        var sankeyFilePath = "sankey.txt";
+        await File.WriteAllTextAsync(sankeyFilePath, sankey.ToString());
+        Console.WriteLine($"Wrote Sankey data to {sankeyFilePath}");
     }
 }
