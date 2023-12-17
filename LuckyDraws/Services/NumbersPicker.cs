@@ -14,7 +14,9 @@ public class NumbersPicker
         Console.WriteLine("Picking the most frequent number combinations");
         var sw = Stopwatch.StartNew();
 
-        var maxF = numberFrequencies.OrderByDescending(frequency => frequency.CurrentNumberFrequency).Take(1).ToList();
+        var maxF = numberFrequencies.OrderByDescending(frequency => frequency.CurrentNumberFrequency)
+            // .Take(1)
+            .ToList();
         // var combinations = new HashSet<Combination>(new CombinationComparer());
         var combinations = new HashSet<Combination>();
         foreach (var numberFrequency in maxF)

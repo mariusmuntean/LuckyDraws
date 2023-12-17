@@ -11,12 +11,12 @@ var numberFrequencies = nfp.ProduceFrequencies(allTickets);
 var np = new NumbersPicker();
 var combinations = np.PickMostFrequentCombinations(numberFrequencies);
 
+var sankeyDiagramRenderer = new SankeyDiagramDotNetCombinationRenderer();
+var sankey = sankeyDiagramRenderer.Render(combinations);
 
-if (combinations.Count != 0)
-{
-    Console.WriteLine("Combinations");
-    foreach (var combination in combinations)
-    {
-        Console.WriteLine(string.Join(", ", combination.CombinationNumbers.Select(cn => cn.Number)));
-    }
-}
+var sankeyFilePath = "sankey.txt";
+await File.WriteAllTextAsync(sankeyFilePath, sankey.ToString());
+Console.WriteLine($"Wrote Sankey data to {sankeyFilePath}");
+
+// var consoleRenderer = new ConsoleCombinationRenderer();
+// consoleRenderer.Render(combinations);
