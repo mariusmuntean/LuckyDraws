@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Diagnostics;
 
 namespace LuckyDraws.Services;
@@ -9,23 +10,24 @@ public class NumberFrequencyProducer
         ArgumentNullException.ThrowIfNull(tickets);
         Console.WriteLine($"Producing frequencies for all numbers and their ticket neighbors");
         var sw = Stopwatch.StartNew();
-        
+
         var rawNumberFrequencies = GetRawNumberFrequencies(tickets);
-        var numberFrequencies = new List<NumberFrequency>(49);
-        foreach (var (number, frequency) in rawNumberFrequencies)
+        var numberFrequenciesBag = new ConcurrentBag<NumberFrequency>();
+        Parallel.ForEach(rawNumberFrequencies, (pair, _, _) =>
         {
+            var (number, frequency) = pair;
             var ticketsWithCurrentNumber = tickets?.Where(ticket => ticket.Numbers.Contains(number)).ToList();
-            numberFrequencies.Add(new NumberFrequency()
+            numberFrequenciesBag.Add(new NumberFrequency()
             {
                 CurrentNumber = number,
                 CurrentNumberFrequency = frequency,
                 TicketsWithCurrentNumber = ticketsWithCurrentNumber,
                 NumberFrequenciesOfTicketNeighbors = ComputeTicketNeighborsFrequencies(new HashSet<byte>() { number }, ticketsWithCurrentNumber)
             });
-        }
-
+        });
+        
         Console.WriteLine($"Frequencies produced in {sw.Elapsed.TotalSeconds} seconds");
-        return numberFrequencies;
+        return numberFrequenciesBag.ToList();
     }
 
     private List<NumberFrequency>? ComputeTicketNeighborsFrequencies(HashSet<byte> currentNumbers, List<Ticket>? ticketsWithCurrentNumber)
@@ -65,7 +67,7 @@ public class NumberFrequencyProducer
         {
             return new Dictionary<byte, int>(0);
         }
-        
+
         var numberFrequencies = new Dictionary<byte, int>(tickets.Count);
         foreach (var ticket in tickets)
         {
