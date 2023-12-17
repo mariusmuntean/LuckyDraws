@@ -4,31 +4,33 @@ namespace LuckyDraws.Services;
 
 public class NumbersPicker
 {
-    public HashSet<byte[]> PickMostFrequentCombinations(List<NumberFrequency>? numberFrequencies)
+    public HashSet<Combination> PickMostFrequentCombinations(List<NumberFrequency>? numberFrequencies)
     {
         if (numberFrequencies is null || numberFrequencies.Count == 0)
         {
-            return new HashSet<byte[]>();
+            return new HashSet<Combination>();
         }
+
         Console.WriteLine("Picking the most frequent number combinations");
         var sw = Stopwatch.StartNew();
 
         var maxF = numberFrequencies.OrderByDescending(frequency => frequency.CurrentNumberFrequency).Take(1).ToList();
-        var combinations = new HashSet<byte[]>(new CombinationComparer());
+        // var combinations = new HashSet<Combination>(new CombinationComparer());
+        var combinations = new HashSet<Combination>();
         foreach (var numberFrequency in maxF)
         {
-            PickMostFrequentCombinationsInternal([numberFrequency.CurrentNumber], numberFrequency, combinations);
+            PickMostFrequentCombinationsInternal([new CombinationNumber(numberFrequency.CurrentNumber, numberFrequency.CurrentNumberFrequency)], numberFrequency, combinations);
         }
 
         Console.WriteLine($"Picked most frequent combinations in {sw.Elapsed.TotalSeconds} seconds");
         return combinations;
     }
 
-    static void PickMostFrequentCombinationsInternal(byte[] numbers, NumberFrequency numberFrequencies, ISet<byte[]> combinations)
+    static void PickMostFrequentCombinationsInternal(CombinationNumber[] currentCombinationNumbers, NumberFrequency numberFrequencies, ISet<Combination> combinations)
     {
-        if (numbers is { Length: >= 6 })
+        if (currentCombinationNumbers is { Length: >= 6 })
         {
-            combinations.Add(numbers);
+            combinations.Add(new Combination(currentCombinationNumbers));
         }
 
         if (numberFrequencies.NumberFrequenciesOfTicketNeighbors is null || numberFrequencies.NumberFrequenciesOfTicketNeighbors.Count == 0)
@@ -39,11 +41,15 @@ public class NumbersPicker
         var orderedNeighborFrequencies = numberFrequencies.NumberFrequenciesOfTicketNeighbors.OrderByDescending(frequency => frequency.CurrentNumberFrequency).ToList();
         foreach (var numberFrequency in orderedNeighborFrequencies)
         {
-            PickMostFrequentCombinationsInternal([..numbers, numberFrequency.CurrentNumber], numberFrequency, combinations);
+            PickMostFrequentCombinationsInternal([..currentCombinationNumbers, new CombinationNumber(numberFrequency.CurrentNumber, numberFrequency.CurrentNumberFrequency)], numberFrequency, combinations);
         }
     }
 
-    class CombinationComparer : IEqualityComparer<byte[]>
+    public record CombinationNumber(byte Number, int Frequency);
+
+    public record Combination(CombinationNumber[] CombinationNumbers);
+
+    private class CombinationComparer : IEqualityComparer<byte[]>
     {
         public bool Equals(byte[]? x, byte[]? y)
         {

@@ -17,6 +17,6 @@ if (combinations.Count != 0)
     Console.WriteLine("Combinations");
     foreach (var combination in combinations)
     {
-        Console.WriteLine(string.Join(", ", combination));
+        Console.WriteLine(string.Join(", ", combination.CombinationNumbers.Select(cn => cn.Number)));
     }
 }
